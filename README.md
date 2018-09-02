@@ -3,5 +3,6 @@
 
 ### 软件篇
 
-- [ ] Ubuntu安装
-- [ ] python管理器
+- [x] Ubuntu安装
+- [x] python管理器
+- [x] matlab安装

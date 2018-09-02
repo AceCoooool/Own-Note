@@ -208,3 +208,20 @@ sudo apt-get install ultra-flat-icons
 
    打开时存在字体缺失问题，解决方法下载缺失的字体，在放到fonts文件夹下，可参考这篇文章[wps字体缺失问题](https://my.oschina.net/renwofei423/blog/635798)
 
+### ⑦ 添加新字体
+
+对于写代码而言，微软雅黑+consolas是比较理想的字体类型。因此将其添加到系统字体中，详细可参考[微软雅黑+consolas字体](http://www.linuxdiyf.com/linux/21351.html)，具体步骤如下
+
+```shell
+sudo mkdir -p /usr/share/fonts/windows
+sudo cp YaHeiConsolas.ttf /usr/share/fonts/windows/
+sudo chmod 644 /usr/share/fonts/windows/*.ttf
+```
+
+进入子目录，刷新并安装字体
+
+```shell
+cd /usr/share/fonts/windows/
+sudo mkfontscale && sudo mkfontdir && sudo fc-cache -fv
+```
+
