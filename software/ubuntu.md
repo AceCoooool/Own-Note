@@ -87,7 +87,56 @@
 >    sudo apt-mark unhold linux-image-generic linux-headers-generic
 >    ```
 >
-> 2. 
+> 2. 可能默认的"附加驱动"上面的显卡驱动版本比较老，可以采用下面方法进行更新：
+>
+>    ```shell
+>    sudo add-apt-repository ppa:graphics-drivers/ppa && sudo apt update
+>    ```
+>
+>    你就可以发现**系统设置→软件和更新→附加驱动**上面多了最新的一些开源显卡驱动
+
+> 如果你想"自虐"一点，手动安装驱动的话，可以参考下面的内容（不太建议，内核更新会需要重新在安装一遍）：
+>
+> 主要可以参考[Youtube上的一个教程](https://www.youtube.com/watch?v=cVTsemATIyI&t=2s)，具体步骤如下所示，按`cltr+alt+f1`进入命令界面：
+>
+> 1. 将一些“东东”加入黑名单，具体原理不详，应该是禁用一些与NVIDIA驱动冲突的地方
+>    在终端输入`sudo nano /etc/modprobe.d/blacklist.conf`，在里面加上
+>
+>    ```shell
+>    blacklist amd76x_edac 
+>    blacklist vga16fb 
+>    blacklist nouveau 
+>    blacklist rivafb 
+>    blacklist nvidiafb 
+>    blacklist rivatv 
+>    ```
+>
+>    关于nano的指令可以参考：[nano指令](http://man.linuxde.net/nano)
+>
+> 2. 移除可能潜在的已装的NVIDIA驱动(大部分情况下不需要这条命令)：`sudo apt-get remove --purge nvidia-*`
+>
+> 3. 关闭图形化界面：`sudo service lightdm stop` 如果是`gnome`的界面：`sudo service gdm stop`
+>
+> 4. 下载并安装英伟达驱动，当然也可以直接其他电脑下载好，拷贝进去
+>
+>    ```shell
+>    cd ~/Downloads
+>    wget us.download.nvidia.com/XFree86/Linux-x86_64/367.44/NVIDIA-Linux-x86_64-375.39.run
+>    sudo chmod +x NVIDIA-Linux-x86_64-375.39.run
+>    sudo ./NVIDIA-Linux-x86_64-375.39.run
+>    ```
+>
+>    安装过程中大部分按照提示就可以安装成功，其中有一个选择是是否安装32位的，这个选择否就可以，以及是否安装`xconfig`(不记得具体的，有个X开头的)的安装。
+>
+> 5. 善后工作：与重启图形化界面有关
+>
+>    ```shell
+>    sudo nvidia-xconfig
+>    sudo update-initramfs -u
+>    sudo reboot
+>    ```
+>
+> 6. 检验是否安装成功可以输入`nvidia-smi`查看是否有驱动信息弹出来
 
 ### ② 上网客户端
 

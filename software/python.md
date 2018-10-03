@@ -88,3 +88,15 @@
 >
 > 即可
 
+2. 添加fcitx支持
+   将`./pycharm.sh`文件里面下入下述语句
+
+   ```shell
+   export GTK_IM_MODULE=fcitx
+   export QT_IM_MODULE=fcitx
+   export XMODIFIERS=@im=fcitx
+   ```
+
+
+
+   ​	
