@@ -325,3 +325,28 @@ string multiply(string num1, string num2) {
 
 > 相关话题：贪心算法，数组
 
+每次当前围住`cur`下一步能走到的所有位置`next`中"再走一步"最远的位置，将该`cur`更新为此`next`，不断进行下去直到`cur`能够直接一步走到最后一个位置
+
+![](png/e5.png)
+
+【代码实现】
+
+```cpp
+int jump(vector<int> &nums) {
+    int n = nums.size();
+    int cur = 0, next = 0, pos, res = 0;
+    while (cur < n - 1) {
+        if (cur + nums[cur] >= n - 1) return res + 1;
+        for (int i = 1; i <= nums[cur]; ++i) {
+            if (cur + i + nums[cur + i] > next) {
+                next = cur + i + nums[cur + i];
+                pos = cur + i;
+            }
+        }
+        cur = pos;
+        ++res;
+    }
+    return res;
+}
+```
+
