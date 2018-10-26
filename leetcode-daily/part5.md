@@ -350,3 +350,84 @@ int jump(vector<int> &nums) {
 }
 ```
 
+## 46. 全排列
+
+> 给定一个**没有重复**数字的序列，返回其所有可能的全排列。
+>
+> **示例:**
+>
+> ```
+> 输入: [1,2,3]
+> 输出:
+> [
+>   [1,2,3],
+>   [1,3,2],
+>   [2,1,3],
+>   [2,3,1],
+>   [3,1,2],
+>   [3,2,1]
+> ]
+> ```
+
+【解题思路】
+
+> 相关话题：回溯算法
+>
+> 说明：更多解法可见：[全排列](http://www.cnblogs.com/grandyang/p/4358848.html)
+
+深度优先搜索算法，采用一个向量`flag`来标记每个位置是否被访问过。
+
+![](png/e6.png)
+
+【代码实现】
+
+```cpp
+void helper(vector<int> &nums, vector<bool> &flag, vector<int> &tmp, vector<vector<int>> &res) {
+    if (tmp.size() == nums.size()) {
+        res.push_back(tmp);
+        return;
+    }
+    for (int i = 0; i < nums.size(); ++i) {
+        if (!flag[i]) continue;
+        flag[i] = false;
+        tmp.push_back(nums[i]);
+        helper(nums, flag, tmp, res);
+        tmp.pop_back();
+        flag[i] = true;
+    }
+}
+
+vector<vector<int>> permute(vector<int> &nums) {
+    int n = nums.size();
+    vector<bool> flag(n, true);
+    vector<vector<int>> res;
+    vector<int> tmp;
+    for (int i = 0; i < nums.size(); ++i) {
+        flag[i] = false;
+        tmp.push_back(nums[i]);
+        helper(nums, flag, tmp, res);
+        tmp.pop_back();
+        flag[i] = true;
+    }
+    return res;
+}
+```
+
+## 47. 全排列 II
+
+> 给定一个可包含重复数字的序列，返回所有不重复的全排列。
+>
+> **示例:**
+>
+> ```
+> 输入: [1,1,2]
+> 输出:
+> [
+>   [1,1,2],
+>   [1,2,1],
+>   [2,1,1]
+> ]
+> ```
+
+【解题思路】
+
