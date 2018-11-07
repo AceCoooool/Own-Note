@@ -1,6 +1,6 @@
 # 这里主要记录用的时候一些"注意事项"
 
-1. `<torch/torch.h>` v.s. `<ATen/ATen.h>`：命名空间`at`包含在命名空间`torch`下面。但是采用两种方式定义的变量是有区别的
+1. `<torch/torch.h>` v.s. `<ATen/ATen.h>`：命名空间`at`包含在命名空间`torch`下面。但是采用两种方式定义的变量是有区别的（其中的`<torch/torch.h>`在下一次更新会被弃用，建议采用`<torch/extension.h>`）
 
    ```cpp
    at::Tensor tensor1 = at::ones({2});   // 对应的是CPUFloatType{2}类型
@@ -42,4 +42,12 @@
    > 原因请看：[Using thrust with printf / cout](https://stackoverflow.com/questions/36855469/using-thrust-with-printf-cout) --- 说白了就是NVIDIA并没有实现c++的I/O
 
 3. 目前存在的一个bug，采用cmake3.12会在运行的时候出错（而CLion18.02自带的就是cmake3.12）。这个bug真算是神坑
+
+   > 如果想要在CLion1802使用，可以调用CLion之前版本的cmake捆绑（比如CLion1801版本）：地址在
+   >
+   > ```shell
+   > your_clion_path/bin/cmake/bin/cmake
+   > ```
+
+4. ​
 
