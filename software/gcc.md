@@ -20,6 +20,19 @@
    sudo apt-get install gcc-8.1 g++-8.1
    ```
 
+   > 可能存在的问题，你会找不到源（即出现无法定位软件包 gcc-8.1）
+   >
+   > 解决方法：添加源（下述两个源供参考）
+   >
+   > ```shell
+   > # 源1  https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test
+   > sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+   > # 源2  https://launchpad.net/~jonathonf
+   > sudo add-apt-repository ppa:jonathonf/gcc-8.1
+   > ```
+   >
+   > 在执行`sudo apt-get update`即可
+
 4. 安装之后可以采用下述命令"设定"优先级
 
    ```shell

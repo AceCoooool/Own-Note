@@ -7,6 +7,7 @@
 - [x] python管理器
 - [x] matlab安装
 - [x] CLion安装（破解+CUDA插件）
+- [x] GCC多版本
 
 ### 编程语篇
 
