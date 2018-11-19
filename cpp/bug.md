@@ -66,3 +66,51 @@ A b(size_t(5), 5); // 输出A(size_t, int)
 ## 析构函数
 
 不管你是采用临时变量，还是move之后的，其销毁都是经过析构函数的。所以这方面要小心。详见`stl_deque`里面的移动操作。
+
+
+
+## cstring
+
+1. `void* memcpy( void* dest, const void* src, std::size_t count)`：从 `src` 所指向的对象复制 `count` 个字符到 `dest` 所指向的对象。两个对象都被转译成 `unsigned char` 的数组。
+   - 若对象重叠，则行为未定义！！！
+   - 若对象不[可平凡复制](https://zh.cppreference.com/w/cpp/named_req/TriviallyCopyable) (TriviallyCopyable) ，则 `memcpy` 的行为未指定而且[可能未定义](http://stackoverflow.com/questions/29777492)
+
+> `std::memcpy` 理应是最快的内存到内存复制子程序。它通常比必须扫描其所复制数据的 [std::strcpy](https://zh.cppreference.com/w/cpp/string/byte/strcpy) ，或必须预防以处理重叠输入的 [std::memmove](https://zh.cppreference.com/w/cpp/string/byte/memmove) 更高效。
+
+2. `void* memmove( void* dest, const void* src, std::size_t count )`：从 `src` 所指向的对象复制 `count` 个字节到 `dest` 所指向的对象。两个对象都被转译成 `unsigned char` 的数组。
+
+> 尽管说明了“如同”使用临时缓冲区，此函数的实际实现不会带来二次复制或额外内存的开销。常用方法（ glibc 和 bsd libc ）是若目标在源之前开始，则从缓冲区开始正向复制，否则从末尾反向复制，完全无重叠时回落到更高效的 [std::memcpy](https://zh.cppreference.com/w/cpp/string/byte/memcpy) 。
+
+
+
+## 继承关系
+
+```cpp
+class A {
+public:
+    int a;
+    int b;
+};
+
+class B : public A {
+public:
+    int c;
+};
+
+// 类型1
+B b;
+b.a = 1; b.b = 2; b.c = 3;
+
+A a = b;
+auto c = static_cast<B &>(a);
+cout << c.c << endl;  // 1（不正确的结果）
+// auto c = static_cast<B>(a)  // Error, 无法转换
+
+// 类型2
+B *bb = new B();
+bb->a = 1; bb->b = 2; bb->c = 3;
+A *aa = bb;
+B *cc = static_cast<B *>(aa);
+cout << cc->c << endl;  // 3 正确！！！
+```
+
