@@ -229,5 +229,134 @@ int main(void) {
 - 由于内联，当函数在执行`=`运算符调用`src.Eval(i)` 时会在编译时被编译成`B.dptr[i] + C.dptr[i] + C.dptr[i]`。
 - 我们可以像循环一样高效地将等式写成逐元素的方式。
 
+> 奇怪的是，采用这种方式和naive在时间上面基本没有差别！比lazy慢了一倍
+
 ### 使之更灵活
+
+通过上面的例子，我们可以发现模板编程可以使得程序更灵活（在编译阶段）。最后的例子比较接近mshadow了，能够允许用户使用二元运算符（[exp_template_op.cpp](https://github.com/dmlc/mshadow/blob/master/guide/exp-template/exp_template_op.cpp)）
+
+```cpp
+// Example code, expression template
+// with binary operator definition and extension
+// for simplicity, we use struct and make all members public
+#include <cstdio>
+
+// this is expression, all expressions must inheritate it,
+// and put their type in subtype
+template<typename SubType>
+struct Exp{
+  // returns const reference of the actual type of this expression
+  inline const SubType& self(void) const {
+    return *static_cast<const SubType*>(this);
+  }
+};
+
+// binary operators
+struct mul{
+  inline static float Map(float a, float b) {
+    return a * b;
+  }
+};
+
+// binary add expression
+// note how it is inheritates from Exp
+// and put its own type into the template argument
+template<typename OP, typename TLhs, typename TRhs>
+struct BinaryMapExp: public Exp<BinaryMapExp<OP, TLhs, TRhs> >{
+  const TLhs& lhs;
+  const TRhs& rhs;
+  BinaryMapExp(const TLhs& lhs, const TRhs& rhs)
+      :lhs(lhs), rhs(rhs) {}
+  // evaluation function, evaluate this expression at position i
+  inline float Eval(int i) const {
+    return OP::Map(lhs.Eval(i), rhs.Eval(i));   // 核心在于这部分改了下
+  }
+};
+// no constructor and destructor to allocate and de-allocate memory
+// allocation done by user
+struct Vec: public Exp<Vec>{
+  int len;
+  float* dptr;
+  Vec(void) {}
+  Vec(float *dptr, int len)
+      : len(len), dptr(dptr) {}
+  // here is where evaluation happens
+  template<typename EType>
+  inline Vec& operator=(const Exp<EType>& src_) {
+    const EType &src = src_.self();
+    for (int i = 0; i < len; ++i) {
+      dptr[i] = src.Eval(i);
+    }
+    return *this;
+  }
+  // evaluation function, evaluate this expression at position i
+  inline float Eval(int i) const {
+    return dptr[i];
+  }
+};
+// template binary operation, works for any expressions
+template<typename OP, typename TLhs, typename TRhs>
+inline BinaryMapExp<OP, TLhs, TRhs>
+F(const Exp<TLhs>& lhs, const Exp<TRhs>& rhs) {
+  return BinaryMapExp<OP, TLhs, TRhs>(lhs.self(), rhs.self());
+}
+
+template<typename TLhs, typename TRhs>
+inline BinaryMapExp<mul, TLhs, TRhs>
+operator*(const Exp<TLhs>& lhs, const Exp<TRhs>& rhs) {
+  return F<mul>(lhs, rhs);
+}
+
+// user defined operation
+struct maximum{
+  inline static float Map(float a, float b) {
+    return a > b ? a : b;
+  }
+};
+
+const int n = 3;
+int main(void) {
+  float sa[n] = {1, 2, 3};
+  float sb[n] = {2, 3, 4};
+  float sc[n] = {3, 4, 5};
+  Vec A(sa, n), B(sb, n), C(sc, n);
+  // run expression, this expression is longer:)
+  A = B * F<maximum>(C, B);
+  for (int i = 0; i < n; ++i) {
+    printf("%d:%f == %f * max(%f, %f)\n",
+           i, A.dptr[i], B.dptr[i], C.dptr[i], B.dptr[i]);
+  }
+  return 0;
+}
+```
+
+### 总结
+
+到这里为止，你应该已经明白它背后的基本思想：
+
+- 延迟计算，使得我们能知道所有的操作数和目标。
+- 复合模板和递归计算，使得我们能够计算逐元素操作的任意复合表达式。
+- 由于模板和内联的设计，我们写出来的表达式像用循环实现更新规则的一样高效。
+
+所以在编写机器学习代码时其实是写表达式，并将精力集中在重要的算法上。
+
+## 在MShadow中的表达式模板
+
+Mshadow的表达式模板用到上面我们介绍的关键思想，但有几个小的不同点：
+
+- 我们将评估代码与表达式构建和组成代码分开：
+  - 在表达中创建`Plan`类用来替代`Exp`类的计算函数`Eval`，用来计算结果。
+  - 这允许我们在`Plan`中放置较少的变量，例如，当我们评估数据时，我们不需要数组长度。
+  - 一个重要的原因是CUDA内核不能使用const引用来接受类。
+  - 虽然这种设计选择是有争议的，但我们发现迄今为止还是有用的。
+- 延迟还支持复式的表达式，比如矩阵的乘法
+  - 除了逐元素的表达式，我们还支持比这样`A = dot(B.T(), C)`的运算，同样延迟表达是不需要分配临时内存的。
+- 类型检查和数组长度检查。
+
+## 备注
+
+表达式模板与`C++11`：在`C++11`中，移动构造函数可以用来保存重复的分配内存，这样就**省去了一些需要的表达模板。然后，仍然要分配最少一次的空间**。
+
+- 这只是删除了表达式模板中表达式所需的内存，比如`dst = A+B+C`，`dst`并没有包括赋值前所分配的空间。
+- 如果我们想保留所有的变量预先分配内存的语法，并且表达式执行时没有内存分配（这是我们在mshadow中所做的），我们仍然需要表达式模板。
 
