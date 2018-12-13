@@ -63,6 +63,31 @@
 > pyenv update
 > ```
 
+6. 如果在`pyenv install anancondaxxx`出现"下载不了"（类似下述错误）
+
+   ```cpp
+   Downloading Anaconda3-5.1.0-Linux-x86_64.sh...
+   -> https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh
+   error: failed to download Anaconda3-5.1.0-Linux-x86_64.sh
+
+   BUILD FAILED (Ubuntu 16.04 using python-build 1.2.2-119-gec9fb54)
+
+   Inspect or clean up the working tree at /tmp/python-build.20181213201209.3537
+   Results logged to /tmp/python-build.20181213201209.3537.log
+
+   Last 10 log lines:
+   /tmp/python-build.20181213201209.3537 ~
+   curl: (56) GnuTLS recv error (-54): Error in the pull function.
+   ```
+
+   可以参考[pyenv issue597](https://github.com/pyenv/pyenv/issues/597)，采用下面方式手动安装
+
+   ```shell
+   $ wget -P $(pyenv root)/cache https://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
+   ```
+
+   ​
+
 ## 2. Pycharm IDE
 
 在[官网](https://www.jetbrains.com/pycharm/)下载最新的pycharm IDE，之后在本地解压即可

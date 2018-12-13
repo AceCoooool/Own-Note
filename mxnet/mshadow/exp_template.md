@@ -229,7 +229,7 @@ int main(void) {
 - 由于内联，当函数在执行`=`运算符调用`src.Eval(i)` 时会在编译时被编译成`B.dptr[i] + C.dptr[i] + C.dptr[i]`。
 - 我们可以像循环一样高效地将等式写成逐元素的方式。
 
-> 奇怪的是，采用这种方式和naive在时间上面基本没有差别！比lazy慢了一倍
+> 奇怪的是，采用这种方式和naive在时间上面基本没有差别！比lazy慢了一倍（但是改为`inline __attribute__((always_inline))`速度就明显上来了。）
 
 ### 使之更灵活
 

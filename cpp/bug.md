@@ -114,3 +114,12 @@ B *cc = static_cast<B *>(aa);
 cout << cc->c << endl;  // 3 正确！！！
 ```
 
+## 速度方面
+
+### inline
+
+采用`inline`和`inline __attribute__((always_inline))`两者其实速度方面还是有差异的：后者会强制编译期进行inline，即使优化是不可用的。（详见：[what “inline __attribute__((always_inline))” means in the function?](https://stackoverflow.com/questions/22767523/what-inline-attribute-always-inline-means-in-the-function)）
+
+不同编译期其实采用哪一种更快是"不一定的"，详见：[always_inline performance](https://indico.cern.ch/event/386232/sessions/159923/attachments/771039/1057534/always_inline_performance.pdf)
+
+> 注：gcc我们可以采用后者，基本上会更快
