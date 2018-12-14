@@ -32,6 +32,10 @@
 
 安装显卡驱动：**系统设置→软件和更新→附加驱动**，选择**NVIDIA驱动**就好了。
 
+> 可以更新附加驱动版本（因为有些CUDA需要更高版本的驱动，具体对应关系请看[CUDA Toolkit](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html)）：
+>
+> `sudo add-apt-repository ppa:graphics-drivers/ppa && sudo apt update`
+
 下载安装CUDA和cudnn：
 
 - 在官网[CUDA下载界面](https://developer.nvidia.com/cuda-downloads)，选择Linux，x86_64，Ubuntu，16.04，runfile再下载下来。后面在含有该文件的目录下运行`sudo sh cuda\_8.0.61_375.26\_linux.run`（名字改为你下载下来的版本）之后一直空格直到出现让你选择是否接受条款开始，之后的除了是否安装NVIDIA驱动选择“否”之外，其他的都选择“是”。具体可以参照[Ubuntu+CUDA](http://lib.csdn.net/article/deeplearning/55144)这篇文章中的选择。执行完上述过程后，要修改环境变量，采用下面的命令, (后来遇到了点小问题，参考了下[nvida cuda guide](http://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#axzz4f2Gn9xWL))
