@@ -30,7 +30,7 @@
   sudo cp include/cudnn.h /usr/local/cuda-8.0/include/
   ```
 
-- 检验是否安装成功，可参照[cuda+cudnn](http://shomy.top/2016/12/29/gpu-tensorflow-install/)这篇博客，具体步骤如下：
+- （该步可省略）检验是否安装成功，可参照[cuda+cudnn](http://shomy.top/2016/12/29/gpu-tensorflow-install/)这篇博客，具体步骤如下：
   ① 进入`/usr/local/cuda/samples`，编译运行某个sample:
 
   ```shell

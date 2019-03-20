@@ -162,6 +162,15 @@ sudo ./rjsupplicant.sh -u 账号 -p 密码 -d 1 -S 1 #(后两项分别为动态i
 sudo ./rjsupplicant.sh
 ```
 
+#### 网络错误的情况
+
+当你点击设置->网络的时候出现“系统的网络服务与此版本的网络管理器不兼容”。那么可以参考[Ubuntu系统的网络服务与此版本的网络管理器不兼容的解决方案](http://www.linuxdiyf.com/linux/22458.html)。具体步骤如下：
+
+1. 命令行输入`ifconfig`查看：
+   如果只有lo显示项。那么执行步骤2，否则直接步骤3
+2. 启动eth0：`ifconfig eth0 up`
+3. 重启网络服务：`NetworkManager`
+
 ### ③ chrome浏览器
 
 从官网[chrome下载](http://www.google.cn/chrome/browser/desktop/)下载.deb版本的chrome，再在下载的目录下执行下述命令

@@ -52,12 +52,13 @@
 cmake_minimum_required(VERSION 3.8)
 project(temp)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
 find_package(CUDA REQUIRED)
 enable_language(CUDA)   # 这句是关键, 当然教程里面还有另一种方式
 
 add_executable(temp tmp.cu)
+set_property(TARGET temp PROPERTY CUDA_STANDARD 11)  # 如果你准备采用c++11, 则请加上这句话
 ```
 
 ② `tmp.cu`
